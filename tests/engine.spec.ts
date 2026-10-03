@@ -142,8 +142,9 @@ test('on demand mental intents are distinct and do not fabricate a longer availa
   const state = initialState();
   expect(recommend(state, 'recharge', 2, undefined, 'Clear my head').category).toBe('Quiet');
   const enjoyable = recommend(state, 'recharge', 1, undefined, 'Do something I enjoy');
-  expect(enjoyable.category).not.toBe('Quiet');
-  expect(enjoyable.interest).toBe('Music');
+  // A tiny window cannot cut off a song or invent time for an enjoyable activity.
+  expect(enjoyable.category).toBe('Quiet');
+  expect(enjoyable.interest).not.toBe('Music');
   expect(enjoyable.duration).toBeLessThanOrEqual(1);
   const reading = { ...state, preferences: { ...state.preferences, interests: ['Reading' as const] } };
   expect(recommend(reading, 'recharge', 10, undefined, 'Do something I enjoy').interest).toBe('Reading');

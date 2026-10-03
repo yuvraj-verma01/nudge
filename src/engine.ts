@@ -7,18 +7,19 @@ export type Interest = typeof rechargeInterests[number];
 export const movementInterests = ['Walking', 'Stretching / mobility', 'Short active bursts', 'Stairs', 'Moving to music', 'Outdoor movement', 'Strength micro-actions'] as const;
 export type MovementInterest = typeof movementInterests[number];
 export type Step = { title: string; seconds: number; instruction: string };
-export type Action = { id: string; title: string; description: string; duration: number; domain: Domain; category: string; interest?: Interest; movement?: MovementInterest; icon: string; indoor: boolean; gentle: boolean; fallbackId?: string; steps: Step[] };
+export type Action = { id: string; title: string; description: string; duration: number; domain: Domain; category: string; interest?: Interest; movement?: MovementInterest; icon: string; indoor: boolean; portable?: boolean; gentle: boolean; fallbackId?: string; steps: Step[] };
 export type ResponseOutcome = 'accepted' | 'fallback_requested' | 'fallback_accepted' | 'swapped' | 'declined' | 'ignored' | 'already_done' | 'completed' | 'abandoned' | 'snoozed';
 export type Response = { actionId: string; outcome: ResponseOutcome; at: number; duration: number; domain: Domain; date: string; contextHour: number; contextMinute: number; fromFallback?: boolean; swapReason?: string; social?: boolean; swappedFrom?: string };
 export type Completion = { id: string; actionId?: string; title: string; duration: number; domain: Domain; date: string; time: string; at?: number; contextHour?: number; contextMinute?: number; fromFallback?: boolean; demo?: boolean; simulated?: boolean; feedback?: string; shared?: boolean; elapsedSeconds?: number };
 export type Preferences = { name: string; goals: string[]; interests: Interest[]; movementPreferences: MovementInterest[]; move: boolean; recharge: boolean; intensity: 'Light' | 'Balanced' | 'Active'; quietStart: string; quietEnd: string; calendar: boolean; movement: boolean; shareMove: boolean; shareRecharge: boolean; pausedUntil: number | null };
-export type Context = { recentHeartRate?: number | null; heartRateTimestamp?: string | null; heartRateSource?: string | null; freeMinutes: number | null; sittingMinutes: number | null; inMeeting: boolean; hour: number; minute: number; lowSleep: boolean; sleepMinutes: number | null; steps: number | null; meetings: number | null; nextEvent: string | null; sessionStarted: number };
+export type ActivitySetting = 'any' | 'indoor' | 'outdoor';
+export type Context = { setting?: ActivitySetting; recentHeartRate?: number | null; heartRateTimestamp?: string | null; heartRateSource?: string | null; freeMinutes: number | null; sittingMinutes: number | null; inMeeting: boolean; hour: number; minute: number; lowSleep: boolean; sleepMinutes: number | null; steps: number | null; meetings: number | null; nextEvent: string | null; sessionStarted: number };
 export const scenarios = ['Packed afternoon', 'Later busy afternoon', 'Quick movement opportunity', 'Busy / no intervention', 'Evening recharge', 'Evening music recharge', 'Connection recharge', 'Social prompt'] as const;
 export type Scenario = typeof scenarios[number];
 export type State = { spotify: SpotifyContext; version: 2; preferences: Preferences; context: Context; mood: Mood | null; responses: Response[]; completions: Completion[]; snoozedUntil: number | null; smallerMove: boolean; demoMode: boolean; scenario: Scenario };
 export const SAMPLE_DATE = '2026-10-03';
 const move = (id: string, title: string, duration: number, category: string, movement: MovementInterest, description: string, options: Partial<Action> = {}): Action => ({ id, title, duration, category, movement, description, domain: 'move', icon: category === 'Walk' || category === 'Outdoors' ? 'footprints' : 'move', indoor: true, gentle: true, steps: [{ title, seconds: duration * 60, instruction: description }], ...options });
-const recharge = (id: string, title: string, duration: number, category: string, interest: Interest, icon: string, description: string): Action => ({ id, title, duration, category, interest, icon, description, domain: 'recharge', indoor: interest !== 'Going outside', gentle: true, fallbackId: 'quiet', steps: [{ title, seconds: duration * 60, instruction: description }] });
+const recharge = (id: string, title: string, duration: number, category: string, interest: Interest, icon: string, description: string): Action => ({ id, title, duration, category, interest, icon, description, domain: 'recharge', indoor: interest !== 'Going outside', portable: ['Music', 'Talking to a friend', 'Reading', 'Quiet / mindfulness'].includes(interest), gentle: true, fallbackId: 'quiet', steps: [{ title, seconds: duration * 60, instruction: description }] });
 export const actions: Action[] = [
   move('energiser', '2-minute energiser', 2, 'Energise', 'Short active bursts', 'A gentle indoor reset, with a little room to move at your own pace.', { fallbackId: 'mobility-90', steps: [
     { title: 'Shoulder rolls', seconds: 30, instruction: 'Let your arms relax. Slowly roll your shoulders back, keeping the movement comfortable.' },
@@ -60,16 +61,18 @@ export const actions: Action[] = [
   move('wall-push', 'One-minute wall push-ups', 1, 'Strength', 'Strength micro-actions', 'Place your hands on a wall. Gently lean toward it and push back at an easy pace.', { gentle: false }),
   move('calves', 'One minute of calf raises', 1, 'Strength', 'Strength micro-actions', 'Hold a stable support. Gently lift your heels and lower them at your own pace.'),
   move('sit-stand', 'A few sit-to-stands', 1, 'Strength', 'Strength micro-actions', 'Use a stable chair. Slowly stand and sit a few times, with support if needed.'),
-  move('outside-2', '2 minutes outside', 2, 'Outdoors', 'Outdoor movement', 'Step outside and take a few easy steps. A small change of scene is enough.', { indoor: false, fallbackId: 'stand' }),
+  move('outside-2', '2 minutes outside', 2, 'Outdoors', 'Outdoor movement', 'Step outside and take a few easy steps. A small change of scene is enough.', { indoor: false, fallbackId: 'outside-minute' }),
   move('outside-minute', 'One minute outside', 1, 'Outdoors', 'Outdoor movement', 'If a nearby outdoor spot is easy to reach, step outside briefly. Stand comfortably or take a few easy steps.', { indoor: false }),
   move('outside', 'A little fresh air', 3, 'Outdoors', 'Outdoor movement', 'Find a nearby outdoor spot and move gently for a few minutes.', { indoor: false, fallbackId: 'outside-2' }),
   recharge('instrument', '10 minutes with an instrument', 10, 'Creative', 'Playing musical instruments', 'music', 'Pick up an instrument and play something you enjoy. No practice plan. No perfect performance.'),
   recharge('music-song', 'One-song reset', 273 / 60, 'Enjoyment', 'Music', 'music', 'Put everything else down. No scrolling. No work. Just listen.'),
   recharge('music', 'Take one song to yourself', 4, 'Enjoyment', 'Music', 'music', 'Put on something you love. Set work aside and just listen. The song is enough.'),
-  recharge('music-minute', 'A minute of music', 1, 'Enjoyment', 'Music', 'music', 'Put on something you enjoy. Set work aside and listen for a little while.'),
+  // Retained for old history; never offered as a new Recharge action.
+  recharge('music-minute', 'A minute of music', 1, 'Enjoyment', 'Music', 'music', 'A previously recorded music break.'),
   recharge('friend', 'Talk to a friend', 5, 'Connection', 'Talking to a friend', 'users', 'Call or message someone you actually want to hear from. There’s no agenda.'),
   recharge('read', 'A few pages, just for you', 10, 'Enjoyment', 'Reading', 'book', 'Pick up something you enjoy reading. Give yourself a few pages without switching back to work.'),
   recharge('show', 'Watch something you enjoy', 15, 'Enjoyment', 'Watching something', 'film', 'Put work aside for a short episode or a little of something you’ve been looking forward to.'),
+  recharge('movie', 'Make room for a movie', 90, 'Enjoyment', 'Watching something', 'film', 'Choose a film that fits the 90 minutes you’ve set aside. Pick something you’ve been looking forward to, then put work away.'),
   recharge('game', 'A little game break', 10, 'Enjoyment', 'Gaming', 'game', 'Take a short break with a game you enjoy. Choose something you can comfortably step away from.'),
   recharge('draw', 'Make something small', 5, 'Creative', 'Creative hobbies', 'palette', 'Grab a pen or a creative tool. Doodle or make something for enjoyment, without needing a result.'),
   recharge('write', 'A few lines for yourself', 5, 'Creative', 'Creative hobbies', 'palette', 'Write whatever comes to mind. A thought, a little story or a few lines just for you.'),
@@ -101,7 +104,7 @@ export function localDate(now = new Date()) { return `${now.getFullYear()}-${Str
 export function stateDate(state: State) { return state.demoMode ? SAMPLE_DATE : localDate(); }
 export function demoTime(context: Pick<Context, 'hour' | 'minute'>) { return `${context.hour % 12 || 12}:${String(context.minute).padStart(2, '0')} ${context.hour >= 12 ? 'PM' : 'AM'}`; }
 export function durationLabel(minutes: number) { const seconds = Math.round(minutes * 60); return minutes < 2 ? `${seconds} seconds` : seconds % 60 ? `${Math.floor(seconds / 60)} minutes ${seconds % 60} seconds` : `${minutes} minutes`; }
-const prefs = (): Preferences => ({ name: 'Yuvraj', goals: ['Break up sitting', 'Unwind'], interests: ['Music', 'Going outside', 'Talking to a friend', 'Playing musical instruments'], movementPreferences: ['Stretching / mobility', 'Outdoor movement', 'Short active bursts'], move: true, recharge: true, intensity: 'Balanced', quietStart: '22:00', quietEnd: '08:00', calendar: true, movement: true, shareMove: false, shareRecharge: false, pausedUntil: null });
+const prefs = (): Preferences => ({ name: 'Yuvraj', goals: ['Break up sitting', 'Unwind'], interests: ['Music', 'Going outside', 'Talking to a friend', 'Playing musical instruments', 'Watching something'], movementPreferences: ['Stretching / mobility', 'Outdoor movement', 'Short active bursts'], move: true, recharge: true, intensity: 'Balanced', quietStart: '22:00', quietEnd: '08:00', calendar: true, movement: true, shareMove: false, shareRecharge: false, pausedUntil: null });
 const seedHistory = (): Completion[] => [
   ['2026-09-28', 'mobility', 5, 14, 20], ['2026-09-28', 'music', 12, 19, 10],
   ['2026-09-29', 'walk', 5, 13, 30], ['2026-09-30', 'mobility', 5, 15, 5],
@@ -119,7 +122,7 @@ export function personalState(): State {
   return { ...initialState(), demoMode: false, spotify: sampleSpotify(false), preferences: { ...prefs(), name: '', interests: [], movementPreferences: [], goals: [], calendar: false, movement: false }, context: { recentHeartRate: null, heartRateTimestamp: null, heartRateSource: null, hour: now.getHours(), minute: now.getMinutes(), freeMinutes: null, sittingMinutes: null, sleepMinutes: null, steps: null, meetings: null, nextEvent: null, lowSleep: false, inMeeting: false, sessionStarted: Date.now() }, mood: null, completions: [] };
 }
 export function scenarioState(current: State, scenario: Scenario): State {
-  const context = { ...initialState().context, sessionStarted: Date.now() };
+  const context = { ...initialState().context, setting: current.context.setting, sessionStarted: Date.now() };
   if (scenario === 'Quick movement opportunity') Object.assign(context, { hour: 16, minute: 20, freeMinutes: 3, sittingMinutes: 75, nextEvent: '4:23 PM' });
   if (scenario === 'Later busy afternoon') Object.assign(context, { hour: 16, minute: 20, freeMinutes: 14, sittingMinutes: 75, meetings: 4, nextEvent: '4:34 PM' });
   if (scenario === 'Busy / no intervention') Object.assign(context, { hour: 15, minute: 5, freeMinutes: 0, inMeeting: true, nextEvent: '4:10 PM' });
@@ -166,6 +169,7 @@ function score(action: Action, state: State) {
     if (state.preferences.interests.includes(action.interest!)) result += 4;
     if (action.id === 'music') result += 1;
     if (action.id === 'music-song') result += 2;
+    if (action.id === 'movie' && (state.context.freeMinutes ?? 0) >= 90) result += 4;
     if (state.scenario === 'Evening music recharge' && action.interest === 'Music' && state.preferences.interests.includes('Music') && !completions.some(c => didNotFit(c.feedback))) result += 8;
     if (state.context.hour >= 18 && action.id === 'instrument' && state.preferences.interests.includes('Playing musical instruments')) result += 3;
     if (state.scenario === 'Connection recharge' && action.id === 'friend' && state.preferences.interests.includes('Talking to a friend')) result += 8;
@@ -183,7 +187,7 @@ function matchesConstraint(action: Action, constraint?: string) {
     case 'Move a little stronger': return action.category === 'Strength';
     case 'Move to music': return action.movement === 'Moving to music';
     case 'Without music': return action.interest !== 'Music';
-    case 'Clear my head': return action.category === 'Quiet';
+    case 'Clear my head': return action.category === 'Quiet' || action.interest === 'Going outside';
     case 'Do something I enjoy': return action.category !== 'Quiet';
     default: return true;
   }
@@ -193,8 +197,18 @@ export function resolveAction(state: State, action: Action): Action {
   const seconds = selectedTrack(state.spotify).durationSeconds;
   return { ...action, duration: seconds / 60, steps: action.steps.map(step => ({ ...step, seconds })) };
 }
+export function fitsSetting(action: Action, setting: ActivitySetting = 'any') {
+  return setting === 'any' || action.portable || (setting === 'indoor' ? action.indoor : !action.indoor);
+}
+export function rechargeChoices(state: State, maximum: number): Action[] {
+  return state.preferences.interests.flatMap(interest => {
+    const choices = candidatesFor(state, 'recharge', maximum, undefined, interest);
+    const best = choices.sort((a, b) => score(b, state) - score(a, state))[0];
+    return best ? [best] : [];
+  });
+}
 function candidatesFor(state: State, domain: Domain, maximum: number, exclude?: string, constraint?: string) {
-  return actions.map(action => resolveAction(state, action)).filter(action => action.domain === domain && (action.id !== 'music-song' || state.spotify.connected && state.preferences.interests.includes('Music')) && action.id !== exclude && action.duration <= maximum && !(domain === 'move' && state.context.lowSleep && !action.gentle) && matchesConstraint(action, constraint));
+  return actions.map(action => resolveAction(state, action)).filter(action => action.domain === domain && action.id !== 'music-minute' && !(action.id === 'music' && state.spotify.connected) && fitsSetting(action, state.context.setting) && (action.id !== 'music-song' || state.spotify.connected && state.preferences.interests.includes('Music')) && action.id !== exclude && action.duration <= maximum && !(domain === 'move' && state.context.lowSleep && !action.gentle) && matchesConstraint(action, constraint) && (!rechargeInterests.includes(constraint as Interest) || action.interest === constraint));
 }
 function constraintWeight(action: Action, constraint?: string) {
   if (constraint === 'Wake me up' && action.id === 'energy-burst') return 10;
@@ -207,11 +221,11 @@ export function recommend(state: State, domain: Domain, maximum: number, exclude
   let candidates = candidatesFor(state, domain, maximum, exclude, constraint);
   if (!candidates.length && exclude) candidates = candidatesFor(state, domain, maximum, undefined, constraint);
   // Personal interests guide enjoyable resets; an unavailable interest never creates a fake longer window.
-  if (constraint === 'Do something I enjoy') {
+  if (domain === 'recharge' && constraint !== 'Clear my head' && constraint !== 'Something quieter') {
     const preferred = candidates.filter(action => action.interest && state.preferences.interests.includes(action.interest));
-    if (preferred.length) candidates = preferred;
+    candidates = preferred.length ? preferred : candidates.filter(action => action.category === 'Quiet');
   }
-  return candidates.sort((a, b) => score(b, state) + constraintWeight(b, constraint) - score(a, state) - constraintWeight(a, constraint))[0] ?? actions.find(a => a.id === (domain === 'move' ? 'stand' : 'quiet'))!;
+  return candidates.sort((a, b) => score(b, state) + constraintWeight(b, constraint) - score(a, state) - constraintWeight(a, constraint))[0] ?? actions.find(a => a.id === (domain === 'move' ? state.context.setting === 'outdoor' ? 'outside-minute' : 'stand' : 'quiet'))!;
 }
 export type Decision = { action: Action | null; reason: string; reasons: string[] };
 export function decide(state: State): Decision {
@@ -291,6 +305,7 @@ export function migrateState(value: unknown): State {
   for (const key of ['quietStart', 'quietEnd'] as const) if (typeof p[key] === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(p[key])) preferences[key] = p[key];
   if (number(p.pausedUntil)) preferences.pausedUntil = p.pausedUntil;
   const context = { ...base.context };
+  if (['any', 'indoor', 'outdoor'].includes(String(value.context.setting))) context.setting = value.context.setting as ActivitySetting;
   if (!preferences.movement) Object.assign(context, { recentHeartRate: null, heartRateTimestamp: null, heartRateSource: null });
   if (value.context.recentHeartRate === null || number(value.context.recentHeartRate) && value.context.recentHeartRate > 0) context.recentHeartRate = value.context.recentHeartRate as number | null;
   if (value.context.heartRateTimestamp === null || typeof value.context.heartRateTimestamp === 'string' && Number.isFinite(Date.parse(value.context.heartRateTimestamp))) context.heartRateTimestamp = value.context.heartRateTimestamp as string | null;

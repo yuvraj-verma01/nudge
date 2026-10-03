@@ -520,12 +520,13 @@ test('joining a friend keeps the activity relevant when preferences differ', asy
   await openDemo(page);
   await goTo(page, 'You');
   await page.getByRole('button', { name: 'Edit your preferences' }).click();
-  for (const name of ['Music', 'Talking to a friend', 'Playing musical instruments']) await page.getByRole('button', { name, exact: true }).click();
+  for (const name of ['Music', 'Talking to a friend', 'Playing musical instruments', 'Watching something']) await page.getByRole('button', { name, exact: true }).click();
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
   await page.getByRole('button', { name: 'See activity', exact: true }).click();
   await page.getByRole('button', { name: 'Join Vijay', exact: true }).click();
-  await page.getByRole('button', { name: '1–2 minutes', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'A minute of music?', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '1–2 minutes', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: '5 minutes', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Take one song', exact: true })).toBeVisible();
   expect((await stored(page)).preferences.interests).toEqual(['Going outside']);
 });
 

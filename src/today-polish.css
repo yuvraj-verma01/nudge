@@ -57,3 +57,15 @@
 .today-page .opportunity { margin-bottom:6px; }
 .music-context-copy { font-size:.75rem; line-height:1.6; color:#705035; margin:0 0 12px; }
 @media(max-width:360px) { .context-chips { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px 8px; } }
+.setting-entry { display:flex; align-items:center; gap:8px; width:100%; min-height:48px; margin:16px 0 0; text-align:left; color:var(--forest); }
+.setting-entry span { flex:1; font-size:.8125rem; }
+.setting-entry strong { font-size:.75rem; font-weight:600; }
+.setting-choice { border:0; padding:0; margin:20px 0; }
+.setting-choice legend { color:var(--forest); font-size:.875rem; margin-bottom:12px; }
+.setting-choice .segmented button { min-height:48px; font-size:.75rem; }
+.personal-recharge { margin:24px 0; }
+.personal-recharge > p { color:var(--muted); font-size:.8125rem; line-height:1.6; margin:10px 0; }
+.recharge-picks { display:grid; gap:4px; }
+.recharge-picks button { display:flex; width:100%; align-items:center; gap:12px; padding:12px 0; min-height:52px; text-align:left; color:var(--forest); border-bottom:1px solid var(--line); }
+.recharge-picks button > span { flex:1; min-width:0; font-size:.8125rem; }
+.recharge-picks small, .sheet-action span > small { display:block; color:var(--muted); font-size:.75rem; line-height:1.6; margin-top:4px; }

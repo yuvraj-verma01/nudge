@@ -53,6 +53,16 @@ Today adds recent **76 bpm · 12m · sample** health context. Heart rate never p
 
 Rhythm now shows weekly moments and time, a Move / Recharge breakdown, seven-day tiles, activity types and supported learning. Reset sample day previews **9 moments / 47 minutes**, clearly separated from new demo choices. Early completion counts actual recorded time. Music feedback changes future Recharge relevance. The [update notes](docs/CONTEXT_RECHARGE_REFLECTION.md) document the boundaries and data model.
 
+## Personalised Recharge and setting
+
+Today’s **Your kind of Recharge** shows the activities you selected that fit the current opening and setting. Instruments, music, watching something, reading, gaming, creative time, friends and outdoors remain distinct interests. Change them through **Edit interests**; ordinary updates preserve existing choices. The fresh sample persona includes watching something, while previously saved interests stay unchanged.
+
+Music always gets a full song and a Spotify link when the demo connection is enabled. One-minute music Recharge actions are retained only as old history, never recommended. A window too short for a song gets another kind of reset. **Indoors or outdoors?** filters the main suggestion and Recharge choices immediately; music, reading, conversation and quiet pauses can work in either setting. The setting is saved separately in demo and personal mode.
+
+**I need something now → Do something I enjoy** lets you declare 2, 5, 15, 30 or 90 minutes. A watching preference can produce a short show or a movie that fits a full 90-minute window. Calendar-derived recommendations never invent that longer opening.
+
+The richer, explicitly simulated sample calendar includes focus time, meetings, lunch, errands, dinner, a personal project and winding down. Today previews commitments and possible openings; the timeline shows the full day. Current sample opportunities are derived from those same calendar blocks.
+
 ## Calendar and responsive check-ins
 
 Tap the meetings context or **Your day & openings** on Today. The day timeline shows commitments, the current free window and possible later openings. Busy blocks explain that Nudge stays quiet; openings are possibilities, not scheduled interventions. Demo commitments are explicitly labelled. Personal saved busy times take precedence and remain untouched.
@@ -63,7 +73,7 @@ The calendar/check-in checkpoint passed 68 automated checks and 38 rendered-stat
 
 ## Presentation validation
 
-Build, 75 automated checks, 44 visual states and production offline music recovery passed. Earlier source checkpoints are preserved locally by the owner. The detailed findings are in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md).
+Build, 80 automated checks and 47 visual states passed. Earlier source checkpoints are preserved locally by the owner. The detailed findings are in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md).
 
 ## Three destinations
 

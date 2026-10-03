@@ -67,3 +67,7 @@ The visual script checks rendered text contrast and control dimensions; it is no
 
 
 The user's final music selection replaces the original example with Guns N’ Roses, Lana Del Rey and Lifafa. Sample source controls identify the artist, and each selected track supplies its own session duration. All 75 checks and 44 rendered-state checks passed after this change. Production offline recovery passed for a paused music session, all three cached album covers, completion feedback restoration and updated weekly totals.
+
+## Full-song and personalisation refinement
+
+Validated 80 automated checks across the regression suite and new personalisation scenarios. The 47-state visual audit found no contrast, target-size, overflow or runtime issues. New coverage checks complete-song boundaries, selected interests, instrument and screen activity availability, optional indoor/outdoor filtering and persistence, full-movie time declarations, and agreement between the richer sample calendar and its current openings. The previously published source is preserved locally in `versions/nudge-before-personalisation-2026-10-03.tar.gz`.

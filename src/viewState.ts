@@ -1,4 +1,4 @@
-import { actions, decide, getFallback, resolveAction, stateDate } from './engine';
+import { actions, decide, durationLabel, getFallback, resolveAction, stateDate } from './engine';
 import type { Action, Mood, State } from './engine';
 
 export type Page = 'Today' | 'Rhythm' | 'You';
@@ -14,14 +14,14 @@ export function readView(state: State): ViewState {
       const saved = JSON.parse(raw);
       if (saved?.date !== stateDate(state) || saved?.sessionStarted !== state.context.sessionStarted) return empty();
       const known = actions.find(action => action.id === saved.offer?.actionId);
-      const action = known ? resolveAction(state, known) : undefined;
+      const action = known && !['music-minute', 'music-move-minute'].includes(known.id) ? resolveAction(state, known) : undefined;
       const max = saved.offer?.availableMax;
       const offer: Offer | null = action && typeof saved.offer?.fallback === 'boolean' ? {
         action, fallback: saved.offer.fallback,
         checkIn: ['Good', 'Fine', 'Tired', 'Stressed', 'Overwhelmed'].includes(saved.offer.checkIn) ? saved.offer.checkIn : undefined,
         note: typeof saved.offer.note === 'string' ? saved.offer.note : undefined,
-        availableMax: [2, 5, 15].includes(max) || saved.offer.checkIn && typeof max === 'number' && max >= 1 && max <= 2 ? max : undefined,
-        availableLabel: [2, 5, 15].includes(max) ? ({ 2: '1–2 minutes', 5: '5 minutes', 15: '10+ minutes' } as Record<number, string>)[max] : undefined,
+        availableMax: typeof max === 'number' && max >= 1 && max <= 90 ? max : undefined,
+        availableLabel: [2, 5, 15, 30, 90].includes(max) ? ({ 2: '1–2 minutes', 5: '5 minutes', 15: '15 minutes', 30: '30 minutes', 90: '90 minutes' } as Record<number, string>)[max] : typeof max === 'number' && max >= 1 && max <= 90 ? durationLabel(max) : undefined,
       } : null;
       return {
         page: ['Today', 'Rhythm', 'You'].includes(saved.page) ? saved.page : 'Today',

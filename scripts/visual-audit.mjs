@@ -96,5 +96,9 @@ await scenario('Evening music recharge'); await inspect('spotify-after-feedback'
 await nav('You'); await page.getByRole('button', { name: /^Connections/ }).click(); await inspect('spotify-connections'); await page.keyboard.press('Escape');
 await scenario('Packed afternoon'); await page.getByRole('button', { name: 'Demo: preview a moment' }).click(); await page.getByRole('button', { name: 'Reset sample day', exact: true }).click();
 await nav('Rhythm'); await inspect('weekly-reflection');
+await nav('Today'); await page.getByRole('button', { name: /Indoors or outdoors\?/ }).click(); await inspect('activity-setting');
+await page.getByRole('dialog').getByRole('button', { name: 'Outdoors', exact: true }).click(); await inspect('outdoor-personalisation');
+await page.getByRole('button', { name: /Indoors or outdoors\?/ }).click(); await page.getByRole('dialog').getByRole('button', { name: 'Indoors', exact: true }).click();
+await page.locator('.app-content').evaluate(el => el.scrollTo(0, el.scrollHeight / 2)); await inspect('personal-recharge-calendar');
 console.log(JSON.stringify({ output: out, screens: results.length, errors, issues: results.filter(r => r.contrastIssues.length || r.smallTargets.length || r.overflow) }, null, 2));
 await browser.close();

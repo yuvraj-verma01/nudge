@@ -1,37 +1,21 @@
 import { CalendarDays, ChevronRight, Clock3, Leaf } from 'lucide-react';
-import { formatCalendarTime, freeWindowsForDay, readCalendarEvents, timeToMinutes } from './calendar';
-import type { CalendarEvent } from './calendar';
+import { formatCalendarTime, freeWindowsForDay, timeToMinutes } from './calendar';
 import { stateDate } from './engine';
 import type { State } from './engine';
 import './day-schedule.css';
-
-const hhmm = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
-export function scheduleFor(state: State): { events: CalendarEvent[]; sample: boolean } {
-  const date = stateDate(state);
-  const personal = readCalendarEvents().filter(event => !event.sample && event.date === date);
-  if (!state.demoMode && personal.length) return { events: personal, sample: false };
-  if (!state.preferences.calendar) return { events: [], sample: false };
-  const sample = (title: string, start: string, end: string, id: string): CalendarEvent => ({ id, title, start, end, date, sample: true });
-  if (!state.demoMode) {
-    const now = state.context.hour * 60 + state.context.minute;
-    const next = now + (state.context.freeMinutes ?? 15);
-    return { sample: true, events: next + 30 < 1440 ? [sample('Sample commitment', hhmm(next), hhmm(next + 30), 'sample-next')] : [] };
-  }
-  return { sample: true, events: [
-    sample('Team catch-up', '09:30', '10:00', 'sample-catchup'),
-    sample('Class / project meeting', '11:00', '11:45', 'sample-class'),
-    sample('Project review', '13:30', '14:30', 'sample-review'),
-    sample('Planning meeting', '15:00', '16:10', 'sample-planning'),
-    sample('Focus time', state.scenario === 'Quick movement opportunity' ? '16:23' : '16:34', '17:00', 'sample-focus'),
-    sample('Day wrap-up', '17:35', '18:10', 'sample-wrap'),
-  ] };
-}
+import { scheduleFor } from './schedule';
+export { scheduleFor } from './schedule';
 
 export function DayPeek({ state, onOpen }: { state: State; onOpen: () => void }) {
   const { events, sample } = scheduleFor(state);
   const now = state.context.hour * 60 + state.context.minute;
   const next = events.filter(event => timeToMinutes(event.end)! > now).sort((a, b) => timeToMinutes(a.start)! - timeToMinutes(b.start)!)[0];
-  return <button className="day-peek" onClick={onOpen} aria-label="See your calendar and nudge opportunities"><CalendarDays size={20} aria-hidden="true" /><span><strong>Your day & openings</strong><small>{state.context.inMeeting ? `${next?.title ?? 'Busy now'} · Nudge waits` : state.context.freeMinutes !== null ? `${state.context.freeMinutes} minutes open now${next ? ` · ${next.title} at ${formatCalendarTime(next.start)}` : ''}` : 'See how your calendar helps Nudge find a moment'}</small><em>{sample ? 'Sample calendar' : events.length ? 'Saved busy times' : 'Calendar optional'}</em></span><ChevronRight size={18} aria-hidden="true" /></button>;
+  const windows = freeWindowsForDay(events, stateDate(state), now, 22 * 60);
+  const preview = [
+    ...events.filter(event => timeToMinutes(event.end)! > now).map(event => ({ id: event.id, start: timeToMinutes(event.start)!, end: timeToMinutes(event.end)!, title: event.title, opening: false })),
+    ...windows.filter(window => window.minutes >= 2).map(window => ({ id: `open-${window.start}`, ...window, title: `${window.minutes} minutes open${window.start === now ? ' now' : ''}`, opening: true })),
+  ].sort((a, b) => a.start - b.start).slice(0, 4);
+  return <section className="day-preview" aria-label="Calendar context"><button className="day-peek" onClick={onOpen} aria-label="See your calendar and nudge opportunities"><CalendarDays size={20} aria-hidden="true" /><span><strong>Your day & openings</strong><small>{state.context.inMeeting ? `${next?.title ?? 'Busy now'} · Nudge waits` : state.context.freeMinutes !== null ? `${state.context.freeMinutes} minutes open now${next ? ` · ${next.title} at ${formatCalendarTime(next.start)}` : ''}` : 'See how your calendar helps Nudge find a moment'}</small><em>{sample ? 'Sample calendar' : events.length ? 'Saved busy times' : 'Calendar optional'}</em></span><ChevronRight size={18} aria-hidden="true" /></button>{events.length > 0 && <ol className="day-preview-rows">{preview.map(row => <li key={row.id} className={row.opening ? 'preview-opening' : ''}><span>{formatCalendarTime(row.start)}</span><div><strong>{row.title}</strong><small>{row.opening ? row.start === now ? 'Room for your next small action' : 'Possible nudge · not an appointment' : 'Busy time · your commitments come first'}</small></div></li>)}</ol>}</section>;
 }
 
 export function DaySchedule({ state, onConnections }: { state: State; onConnections: () => void }) {

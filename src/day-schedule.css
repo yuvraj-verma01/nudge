@@ -25,3 +25,11 @@
 .schedule-earlier summary::after { content:'+'; margin-left:auto; font-size:1.125rem; }
 .schedule-earlier[open] summary::after { content:'−'; }
 .schedule-earlier .schedule-timeline { margin-top:4px; }
+.day-preview-rows { list-style:none; padding:0; margin:0; border-bottom:1px solid var(--line); }
+.day-preview-rows li { display:flex; gap:12px; padding:12px 10px; border-top:1px solid var(--line); }
+.day-preview-rows li > span { flex:0 0 62px; color:var(--muted); font-size:.6875rem; padding-top:3px; }
+.day-preview-rows li > div { min-width:0; }
+.day-preview-rows strong { font-size:.8125rem; line-height:1.5; font-weight:600; }
+.day-preview-rows small { display:block; color:var(--muted); font-size:.6875rem; line-height:1.6; margin-top:3px; }
+.day-preview-rows .preview-opening { background:var(--sage); border-radius:10px; }
+.day-preview .day-peek { margin-top:0; border-bottom:0; }
