@@ -1,0 +1,59 @@
+/* The opening screen connects context, opportunity and supported action. */
+.app-header { min-height: calc(64px + env(safe-area-inset-top)); }
+.today-page { padding-top: 8px; }
+.today-heading { margin: 4px 0 16px; }
+.today-heading > p { margin-top: 5px; }
+.day-context { margin-bottom: 16px; }
+.noticed { padding: 12px 0 16px; border-top: 1px solid var(--line); }
+.noticed h2 { font-size: .75rem; line-height: 1.5; font-weight: 750; color: var(--forest); margin-bottom: 6px; }
+.noticed p { display: flex; gap: 8px; align-items: flex-start; font-size: .8125rem; line-height: 1.55; color: var(--muted); }
+.noticed p + p { margin-top: 3px; }
+.noticed svg { margin-top: 3px; color: var(--forest); }
+.noticed p + p svg { color: #795133; }
+.today-page .recommendation { padding-top: 8px; padding-bottom: 12px; }
+.today-page .opportunity { margin: 0 0 8px; }
+.today-page .recommendation-copy { font-size: .875rem; line-height: 1.55; margin-top: 8px; }
+.today-page .action-preview { margin: 12px 0; padding: 8px 0; gap: 6px 12px; }
+.today-page .action-preview > span { font-size: .6875rem; }
+.today-page .action-social { gap: 8px; margin: 0 0 12px; }
+.action-social > p { flex: 1; min-width: 0; }
+.action-social strong { font-weight: 650; font-size: .75rem; color: var(--forest); }
+.recharge .action-social strong { color: #65432b; }
+.action-social p > span { font-size: .6875rem; }
+.action-social .icon-button { width: 44px; height: 44px; margin-right: -8px; }
+.learned-reason { display: flex; align-items: flex-start; gap: 8px; font-size: .75rem; line-height: 1.55; color: var(--forest); margin-top: 10px; }
+.learned-reason .mosaic-mark { margin-top: 3px; }
+.recommendation-footer { display: flex; align-items: flex-start; gap: 12px; margin-top: 6px; border-top: 1px solid #173f351a; }
+.recommendation-footer .decline { width: auto; min-width: 44px; padding-left: 0; padding-right: 8px; margin-top: 0; text-align: left; flex-shrink: 0; }
+.recommendation-footer .why-fits { border: 0; flex: 1; min-width: 0; }
+.recommendation-footer summary { justify-content: flex-end; }
+.recommendation-footer .why-fits ul { padding-top: 4px; }
+.on-demand { margin-top: 24px; }
+.on-demand .on-demand-entry { display: flex; align-items: center; width: 100%; padding: 16px; border-radius: 16px; gap: 12px; min-height: 76px; }
+.on-demand-entry > span { flex: 1; }
+.on-demand-entry strong { font-size: .9375rem; font-weight: 650; }
+.on-demand .on-demand-entry small { margin-top: 4px; font-size: .75rem; line-height: 1.55; }
+.health-inputs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.health-inputs span { background: var(--sage); color: var(--forest); border-radius: 6px; padding: 5px 8px; font-size: .6875rem; line-height: 1.5; }
+@media (max-width: 360px) {
+  .noticed p { font-size: .8125rem; }
+  .recommendation-footer { gap: 8px; }
+  .on-demand .on-demand-entry { padding: 14px; }
+}
+/* Make the pre-action Circle cue readable as social support, rather than a share control. */
+.today-page .action-social { padding:8px 10px; border:1px solid #173f3529; border-radius:12px; background:#f7f6f16b; }
+.action-social strong { font-size:.8125rem; line-height:1.5; }
+.noticed { padding-top:8px; padding-bottom:12px; }
+.today-page .action-preview { margin-top:8px; margin-bottom:8px; }
+.today-page .action-social { padding-top:6px; padding-bottom:6px; margin-bottom:8px; }
+.noticed { padding-bottom:8px; }
+/* Five small contextual inputs still read as a glance, not a health dashboard. */
+.context-chips { grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
+.context-chip { flex-direction:column; gap:2px; }
+.context-chip strong { font-size:.75rem; }
+.context-chip small { font-size:.625rem; }
+.context-chip > svg { margin-top:0; }
+.day-context { margin-bottom:12px; }
+.today-page .opportunity { margin-bottom:6px; }
+.music-context-copy { font-size:.75rem; line-height:1.6; color:#705035; margin:0 0 12px; }
+@media(max-width:360px) { .context-chips { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px 8px; } }

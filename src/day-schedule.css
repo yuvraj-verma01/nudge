@@ -1,0 +1,27 @@
+.day-peek { display:flex; align-items:center; width:100%; gap:12px; padding:18px 0; margin-top:20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); text-align:left; color:var(--forest); }
+.day-peek > span { flex:1; min-width:0; }
+.day-peek strong { font-size:.875rem; font-weight:700; }
+.day-peek small, .day-peek em { display:block; font-size:.75rem; line-height:1.6; color:var(--muted); margin-top:4px; font-style:normal; }
+.day-peek em { font-size:.6875rem; }
+.calendar-chip { text-align:left; min-height:44px; border-radius:8px; }
+.calendar-chip small { text-decoration:underline; text-underline-offset:3px; }
+.schedule-source { font-size:.75rem; color:var(--forest); padding:10px 12px; background:var(--sage); border-radius:8px; line-height:1.6; }
+.schedule-timeline { list-style:none; padding:0; margin:20px 0; }
+.schedule-timeline li { display:flex; align-items:flex-start; gap:12px; position:relative; padding:14px 12px; margin-bottom:4px; border-radius:14px; }
+.schedule-marker { flex-shrink:0; display:grid; place-items:center; width:28px; height:28px; color:var(--muted); background:var(--paper); border:1px solid var(--line); border-radius:50%; }
+.schedule-timeline li > div { min-width:0; }
+.schedule-timeline h3 { font-size:.875rem; line-height:1.5; font-weight:650; margin:4px 0; overflow-wrap:anywhere; }
+.schedule-timeline p { font-size:.75rem; line-height:1.6; color:var(--muted); }
+.schedule-timeline .schedule-time { font-size:.6875rem; font-variant-numeric:tabular-nums; }
+.schedule-timeline .schedule-opening { background:var(--sage); border:1px solid #173f3514; }
+.schedule-opening .schedule-marker { color:var(--forest); background:var(--sage); border-color:#173f3520; }
+.schedule-current { outline:1px solid #173f3555; }
+.schedule-time strong { color:var(--forest); }
+.schedule-empty { padding:24px 0; }
+.schedule-empty h3 { margin-top:16px; }
+.schedule-empty p { font-size:.875rem; line-height:1.6; color:var(--muted); margin:12px 0 20px; }
+.schedule-earlier { border-top:1px solid var(--line); }
+.schedule-earlier summary { display:flex; align-items:center; min-height:44px; padding:12px 0; color:var(--forest); font-size:.8125rem; cursor:pointer; }
+.schedule-earlier summary::after { content:'+'; margin-left:auto; font-size:1.125rem; }
+.schedule-earlier[open] summary::after { content:'−'; }
+.schedule-earlier .schedule-timeline { margin-top:4px; }
