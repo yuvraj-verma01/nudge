@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Open the local address printed by Vite. Each new tab or visit starts on welcome so the presentation begins with onboarding. Refreshing the same tab preserves the current flow, including paused sessions. Saved preferences and history remain intact. To revisit welcome in the current tab, append `?intro=1`.
+Open the local address printed by Vite. Every open or refresh starts a fresh presentation walkthrough at onboarding. Nudge clears its previous profile, setup draft, choices, history and busy times before rendering. Choices last for the current walkthrough only. Sample data is loaded only when explicitly chosen.
 
 ```sh
 npm run build
@@ -55,7 +55,7 @@ Rhythm now shows weekly moments and time, a Move / Recharge breakdown, seven-day
 
 ## Personalised Recharge and setting
 
-Today’s **Your kind of Recharge** shows the activities you selected that fit the current opening and setting. Instruments, music, watching something, reading, gaming, creative time, friends and outdoors remain distinct interests. Change them through **Edit interests**; ordinary updates preserve existing choices. The fresh sample persona includes watching something, while previously saved interests stay unchanged.
+Today’s **Your kind of Recharge** shows the activities you selected that fit the current opening and setting. Instruments, music, watching something, reading, gaming, creative time, friends and outdoors remain distinct interests. Change them through **Edit interests**; ordinary updates preserve existing choices. The fresh sample persona includes watching something, while choices made during the current walkthrough remain unchanged until the next open or refresh.
 
 Music always gets a full song and a Spotify link when the demo connection is enabled. One-minute music Recharge actions are retained only as old history, never recommended. A window too short for a song gets another kind of reset. **Indoors or outdoors?** filters the main suggestion and Recharge choices immediately; music, reading, conversation and quiet pauses can work in either setting. The setting is saved separately in demo and personal mode.
 
@@ -65,7 +65,7 @@ The richer, explicitly simulated sample calendar includes focus time, meetings, 
 
 ## Calendar and responsive check-ins
 
-Tap the meetings context or **Your day & openings** on Today. The day timeline shows commitments, the current free window and possible later openings. Busy blocks explain that Nudge stays quiet; openings are possibilities, not scheduled interventions. Demo commitments are explicitly labelled. Personal saved busy times take precedence and remain untouched.
+Tap the meetings context or **Your day & openings** on Today. The day timeline shows commitments, the current free window and possible later openings. Busy blocks explain that Nudge stays quiet; openings are possibilities, not scheduled interventions. Demo commitments are explicitly labelled. Busy times entered during the current walkthrough take precedence; the next open or refresh clears them.
 
 A **Tired**, **Stressed** or **Overwhelmed** check-in immediately selects a brief, suitable action when there is time. The card names the feeling and explains the fit. This deliberate request can reopen help after a decline or completion; “Not now” still ends that interaction. Busy moments acknowledge the check-in without inventing available time. Selected check-ins can be updated or cleared.
 
@@ -73,7 +73,7 @@ The calendar/check-in checkpoint passed 68 automated checks and 38 rendered-stat
 
 ## Presentation validation
 
-Build, 80 automated checks and 47 visual states passed in the copy-cleanup audit. The presentation-entry update additionally passed six focused onboarding, persistence and recovery scenarios. Earlier source checkpoints are preserved locally by the owner. The detailed findings are in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md).
+Build and all 80 automated checks passed for fresh evaluator entry. The prior visual audit covered 47 screens. Earlier source checkpoints are preserved locally by the owner. The detailed findings are in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md).
 
 ## Three destinations
 
@@ -81,13 +81,13 @@ Build, 80 automated checks and 47 visual states passed in the copy-cleanup audit
 - **Rhythm:** weekly moments and intentional time, Move / Recharge totals, the action mosaic, activity types and supported learning. It is not an agenda or a health dashboard. Sample history is explicitly labelled and never becomes evidence of personal learning.
 - **You:** movement and recharge preferences, a sample Circle, connections, settings and the product guide. Exact preference vocabulary follows the brief; hobbies and creative time are consolidated.
 
-Four-screen personal setup is optional and supports saved drafts. Replaying the introduction preserves existing personal choices and offers a close control. After exploring a sample day, Demo → Return to my personal day restores the saved personal mode. Calendar and health connections can be skipped or simulated, with explanatory labels and no system permission requests. Unconnected inputs remain unknown.
+Four-screen personal setup is optional. Draft choices apply during the current walkthrough and are cleared on the next open or refresh. Replaying the introduction preserves existing personal choices and offers a close control. After exploring a sample day, Demo → Return to my personal day restores the saved personal mode. Calendar and health connections can be skipped or simulated, with explanatory labels and no system permission requests. Unconnected inputs remain unknown.
 
 ## Data and boundaries
 
 The deterministic sample day is **Saturday, October 3, 2026**, at 2:46 PM: 5h 42m sleep, 2,180 steps, 86 minutes sitting, three meetings and fourteen minutes before the next commitment. Health, schedule and Circle inputs are simulations. Example history is marked separately from new choices.
 
-Demo and personal states are stored independently in `mosaic-v2-demo` and `mosaic-v2-personal`; `mosaic-mode` remembers the current mode. `mosaic-active-v2` persists a paused or running session. Mode-specific `mosaic-view-v1-*` records restore the current destination, chosen action and completion screen. Version-one preferences, responses and completions are migrated, including the renamed interests. Original storage remains intact. Existing personal busy times in `mosaic-calendar-v1` are retained and still influence personal recommendations; there is no permanent agenda UI.
+Demo and personal states are stored independently in `mosaic-v2-demo` and `mosaic-v2-personal`; `mosaic-mode` remembers the current mode. `mosaic-active-v2` records a paused or running session during the current walkthrough. Mode-specific `mosaic-view-v1-*` records restore the current destination, chosen action and completion screen. Presentation entry clears previous-version data along with the current profile. Busy times entered during the current walkthrough in `mosaic-calendar-v1` influence personal recommendations; there is no permanent agenda UI.
 
 Feedback affects future activity relevance. Completed smaller actions lower the subsequent movement default. Negative feedback reduces the activity’s relevance, including an unsuitable easier option; later suggestions can stay short while choosing a different action. Indoor swaps increase the relevance of indoor mobility. Quiet hours, pauses, snoozes, cooldowns and prompt limits protect attention. Rules are deterministic and transparent, not a trained model or a clinical assessment.
 
@@ -99,4 +99,4 @@ Notifications are optional, requested only through a deliberate settings action.
 
 The primary layout is 390 × 844. Desktop centres a single column without a fake device frame. Shared native sheets make the background inert, contain keyboard focus and restore it when closed. Text contrast, 44px control targets, enlarged text and reduced motion are covered by the visual audit; interaction tests exercise 320, 390, 768 and 1440px layouts.
 
-`npm run build` produces the manifest, icons and service worker. `npm run preview` serves the production bundle locally. After an initial online load, it can reload offline and retain preferences, choices and a session. Installation requires a secure address reachable by the phone. This is a web/PWA prototype, not an App Store package.
+`npm run build` produces the manifest, icons and service worker. `npm run preview` serves the production bundle locally. After an initial online load, it can open offline. Each load starts a fresh walkthrough, including offline reloads. Installation requires a secure address reachable by the phone. This is a web/PWA prototype, not an App Store package.

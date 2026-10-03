@@ -76,4 +76,4 @@ Use short, concrete instructions for each recommended action. Avoid filler intro
 
 ## Presentation entry
 
-Each new tab or browser visit opens welcome/onboarding even for a previously configured profile. Completing setup or closing the introduction unlocks the current tab for that visit. Refreshing that tab restores the existing flow and active session. Preferences, personal busy times and history remain saved; no presentation-entry reset deletes them.
+The user explicitly changed the prototype persistence requirement: each open or refresh must start from scratch for a new evaluator. Before rendering, clear only Nudge’s known browser storage keys, including preferences, setup drafts, action choices/history, personal busy times and active sessions. Start in unconfigured personal mode at welcome. Choices persist within the current uninterrupted walkthrough only; explicitly choosing the sample day loads the sample persona. This supersedes the earlier cross-visit persistence and refresh-recovery requirements for this presentation prototype. Do not display an implementation explanation in the product flow.

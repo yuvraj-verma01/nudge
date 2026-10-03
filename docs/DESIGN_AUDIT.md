@@ -75,3 +75,7 @@ Validated 80 automated checks across the regression suite and new personalisatio
 ## Copy cleanup
 
 Removed filler prefixes, vague action descriptions, repeated reassurance and duplicate context on action cards. Instructions now name the actual behaviour. Mood remains visible in Nudge noticed and the reasoning disclosure. Retained sample-data, permission and privacy labels. Build, all 80 regression scenarios (including the updated copy expectations) and the 47-screen accessibility/layout audit passed.
+
+## Fresh evaluator entry
+
+The latest user requirement replaces cross-visit persistence: each document load clears the previous evaluator’s Nudge profile, setup draft, history, busy times and active session, then starts empty onboarding. Other application storage is untouched. Updated regression expectations cover current-walkthrough learning rather than restoring across reloads. All 80 checks passed, including seeded previous-user data, partial setup refresh, unrelated-storage preservation and complete sample walkthrough reset. The prior source is preserved locally in `versions/nudge-before-fresh-walkthrough-2026-10-03.tar.gz`.

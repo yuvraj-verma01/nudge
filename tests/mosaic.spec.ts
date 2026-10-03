@@ -46,7 +46,6 @@ test('the two-minute presentation shows context, social support and an actually 
   await preview(page, 'Later busy afternoon');
   await expect(page.getByRole('heading', { name: '90-second movement break?', exact: true })).toBeVisible();
   await expect(page.locator('.learned-reason')).toHaveText('Based on the smaller break you completed earlier.');
-  await page.reload();
   await expect(page.locator('.learned-reason')).toBeVisible();
   await preview(page, 'Evening recharge');
   await expect(page.getByRole('heading', { name: '10 minutes with an instrument?', exact: true })).toBeVisible();
@@ -80,19 +79,17 @@ test('movement swaps expose physical breadth and connection appears as a mental 
   await expect(page.locator('.recommendation')).not.toContainText('Maya is free');
 });
 
-test('adapt → act → feedback → learn → share → Rhythm works across reload', async ({ page }) => {
+test('adapt → act → feedback → learn → share → Rhythm works within a walkthrough', async ({ page }) => {
   await openDemo(page);
   await page.getByRole('button', { name: 'Make it easier', exact: true }).click();
   await expect(page.getByRole('heading', { name: '90-second movement break?', exact: true })).toBeVisible();
   expect((await stored(page)).responses.at(-1).outcome).toBe('fallback_requested');
-  await page.reload();
   await expect(page.getByRole('heading', { name: '90-second movement break?', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Make it easier', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'I can do that', exact: true }).click();
   await expect(page.getByRole('navigation')).toHaveCount(0);
   await expect(page.getByRole('timer')).toHaveText('1:30');
   await page.getByRole('button', { name: 'Pause', exact: true }).click();
-  await page.reload();
   await expect(page.getByRole('button', { name: 'Resume', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Done early', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'A movement break, complete.', exact: true })).toBeVisible();
@@ -114,8 +111,8 @@ test('adapt → act → feedback → learn → share → Rhythm works across rel
 test('timer completion requires a human confirmation', async ({ page }) => {
   await openDemo(page);
   await page.getByRole('button', { name: 'Start', exact: true }).click();
-  await page.evaluate(() => { const active = JSON.parse(localStorage.getItem('mosaic-active-v2')!); localStorage.setItem('mosaic-active-v2', JSON.stringify({ ...active, deadline: Date.now() - 1000, remaining: 0 })); });
-  await page.reload();
+  await page.clock.install();
+  await page.clock.fastForward(121000);
   await expect(page.getByRole('timer')).toHaveText('0:00');
   expect((await stored(page)).completions.filter((c: { demo: boolean }) => !c.demo)).toHaveLength(0);
   await page.getByRole('button', { name: 'Done', exact: true }).click();
@@ -145,7 +142,6 @@ test('swapping visibly changes the activity and records a different response', a
   const state = await stored(page);
   expect(state.responses.at(-1).outcome).toBe('swapped');
   expect(state.responses.at(-1).swapReason).toBe('Stretch / mobility');
-  await page.reload();
   await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible();
 });
 
@@ -240,7 +236,7 @@ test('Rhythm day details and honest learning have useful empty states', async ({
   await expect(page.getByRole('dialog')).toContainText('example');
 });
 
-test('preferences persist and redundant hobby labels are absent', async ({ page }) => {
+test('preferences apply during a walkthrough and redundant hobby labels are absent', async ({ page }) => {
   await openDemo(page);
   await goTo(page, 'You');
   await page.getByRole('button', { name: 'Edit your preferences' }).click();
@@ -251,7 +247,6 @@ test('preferences persist and redundant hobby labels are absent', async ({ page 
   await expect(dialog.getByRole('button', { name: 'Creative hobbies', exact: true })).toHaveCount(1);
   await expect(dialog.getByRole('button', { name: 'Guitar', exact: true })).toHaveCount(0);
   await dialog.getByRole('button', { name: 'Save preferences' }).click();
-  await page.reload();
   expect((await stored(page)).preferences.name).toBe('Alex');
 });
 
@@ -272,12 +267,11 @@ test('reset is deterministic and never deletes saved personal state or busy time
   await expect(page.getByRole('heading', { name: 'Move for 2?', exact: true })).toBeVisible();
 });
 
-test('four-screen setup saves choices, resumes drafts and skips optional connections', async ({ page }) => {
+test('four-screen setup applies choices and skips optional connections', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Set up Nudge', exact: true }).click();
   await page.getByRole('button', { name: 'Unwind', exact: true }).click();
   await page.getByLabel(/Your first name/).fill('Alex');
-  await page.reload();
   await expect(page.getByLabel(/Your first name/)).toHaveValue('Alex');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await page.getByRole('button', { name: 'Walking', exact: true }).click();
@@ -339,21 +333,18 @@ test('200% text remains readable without horizontal page overflow', async ({ pag
   for (const name of ['Today', 'Rhythm', 'You']) { await goTo(page, name); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.querySelector('.app-content')!.scrollWidth <= document.querySelector('.app-content')!.clientWidth)).toBe(true); }
 });
 
-test('saved personal busy times still suppress automatic recommendations after the redesign', async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem('mosaic-onboarded-v3', 'true');
-    sessionStorage.setItem('nudge-entered-session-v1', 'true');
-    localStorage.setItem('mosaic-mode', 'personal');
+test('personal busy times entered during this walkthrough suppress automatic recommendations', async ({ page }) => {
+  await openDemo(page);
+  await page.evaluate(() => {
     const now = new Date();
     const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     localStorage.setItem('mosaic-calendar-v1', JSON.stringify({ version: 1, events: [{ id: 'personal', title: 'My class', date, start: '00:00', end: '23:59' }] }));
   });
-  await page.goto('/');
+  await page.getByRole('button', { name: 'Demo: preview a moment' }).click();
+  await page.getByRole('button', { name: 'Return to my personal day', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Nothing from Nudge right now.', exact: true })).toBeVisible();
   expect((await stored(page, 'mosaic-calendar-v1')).events[0].title).toBe('My class');
-  await expect(page.getByRole('button', { name: /I need something now/ })).toBeVisible();
 });
-
 test('disconnecting sample connections makes health and schedule unknown', async ({ page }) => {
   await openDemo(page);
   await goTo(page, 'You');
@@ -383,7 +374,8 @@ test('returning to personal mode uses the current time immediately and preserves
     localStorage.setItem('mosaic-v2-personal', JSON.stringify(state));
     localStorage.setItem('mosaic-mode', 'personal');
   });
-  await page.reload();
+  await page.getByRole('button', { name: 'Demo: preview a moment' }).click();
+  await page.getByRole('button', { name: 'Return to my personal day', exact: true }).click();
   await expect(page.getByText('These are your quiet hours. We’ll leave this time clear.', { exact: true })).toBeVisible();
   const state = await stored(page, 'mosaic-v2-personal');
   expect(state.context.hour).toBe(await page.evaluate(() => new Date().getHours()));
@@ -392,50 +384,7 @@ test('returning to personal mode uses the current time immediately and preserves
   expect(state.completions).toHaveLength(9);
 });
 
-test('a chosen action and its time window survive reload, and skipping never restores it', async ({ page }) => {
-  await openDemo(page);
-  await preview(page, 'Busy / no intervention');
-  await page.getByRole('button', { name: /I need something now/ }).click();
-  await page.getByRole('button', { name: 'Move my body', exact: true }).click();
-  await page.getByRole('button', { name: '5 minutes', exact: true }).click();
-  await page.getByRole('button', { name: 'Swap activity', exact: true }).click();
-  await page.getByRole('button', { name: 'Go outside', exact: true }).click();
-  await page.reload();
-  await expect(page.getByRole('heading', { name: '2 minutes outside?', exact: true })).toBeVisible();
-  await expect(page.locator('.opportunity')).toContainText('5 MINUTES YOU CHOSE');
-  await page.getByRole('button', { name: 'Make it easier', exact: true }).click();
-  await page.reload();
-  await expect(page.getByRole('button', { name: 'I can do that', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Make it easier', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Skip', exact: true }).click();
-  await page.reload();
-  await expect(page.getByRole('heading', { name: 'Nothing from Nudge right now.', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'I can do that', exact: true })).toHaveCount(0);
-});
 
-test('completion survives reload without recording the action twice', async ({ page }) => {
-  await openDemo(page);
-  await page.getByRole('button', { name: 'Make it easier', exact: true }).click();
-  await page.getByRole('button', { name: 'I can do that', exact: true }).click();
-  await page.getByRole('button', { name: /^Complete demo action/ }).click();
-  const completionId = (await stored(page)).completions.at(-1).id;
-  await page.reload();
-  await expect(page.getByRole('heading', { name: 'How was that?', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Better', exact: true }).click();
-  await page.getByRole('button', { name: 'Share this action', exact: true }).click();
-  await page.reload();
-  await expect(page.getByRole('button', { name: 'Better', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('heading', { name: 'Shared in your sample Circle', exact: true })).toBeVisible();
-  expect((await stored(page)).completions.filter((item: { demo: boolean }) => !item.demo)).toHaveLength(1);
-  expect((await stored(page)).completions.at(-1).id).toBe(completionId);
-  await page.getByRole('button', { name: 'Back to my day', exact: true }).click();
-  await page.reload();
-  await expect(page.getByRole('heading', { name: 'How was that?', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'See activity', exact: true }).click();
-  await expect(page.getByRole('dialog')).toContainText('Yuvraj took a movement break');
-  await expect(page.getByRole('dialog').locator('.action-history')).not.toContainText('Better');
-  await expect(page.getByRole('dialog').locator('.action-history')).not.toContainText('90 seconds');
-});
 
 test('personal setup, demo exploration, introduction replay and guide all have a way back', async ({ page }) => {
   await page.goto('/');
@@ -513,7 +462,6 @@ test('evening completion can continue into the connection example', async ({ pag
   await page.getByRole('button', { name: 'Keep private & back to my day', exact: true }).click();
   await preview(page, 'Connection recharge');
   await expect(page.getByRole('heading', { name: 'Talk to a friend?', exact: true })).toBeVisible();
-  await page.reload();
   await expect(page.locator('.opportunity')).not.toContainText('3:00 PM');
 });
 
@@ -531,7 +479,7 @@ test('joining a friend keeps the activity relevant when preferences differ', asy
   expect((await stored(page)).preferences.interests).toEqual(['Going outside']);
 });
 
-test('an overwhelmed check-in immediately offers a realistic reset after a decline and survives reload', async ({ page }) => {
+test('an overwhelmed check-in immediately offers a realistic reset after a decline within the same walkthrough', async ({ page }) => {
   await openDemo(page);
   await page.getByRole('button', { name: 'Not now', exact: true }).click();
   await expect(page.locator('.recommendation')).toHaveCount(0);
@@ -543,7 +491,6 @@ test('an overwhelmed check-in immediately offers a realistic reset after a decli
   await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeInViewport();
   const before = await stored(page);
   expect(before.responses.at(-1).outcome).toBe('declined');
-  await page.reload();
   await expect(page.locator('.recommendation-copy')).toHaveText('Look away from your screen and take a few comfortable breaths.');
   await page.getByRole('button', { name: 'Start', exact: true }).click();
   await expect(page.locator('.active-session')).toBeVisible();
@@ -553,7 +500,6 @@ test('an overwhelmed check-in immediately offers a realistic reset after a decli
   await page.getByRole('dialog').getByRole('button', { name: 'Overwhelmed', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeInViewport();
   await page.getByRole('button', { name: 'Not now', exact: true }).click();
-  await page.reload();
   await expect(page.locator('.recommendation')).toHaveCount(0);
 });
 
@@ -623,7 +569,6 @@ test('Spotify enables a focused one-song break and the completion feeds weekly r
   await expect(page.locator('.music-instruction')).toContainText('No scrolling. No work. Just listen.');
   await expect(page.locator('.context-chips')).toHaveCount(0);
   await page.getByRole('button', { name: 'Pause', exact: true }).click();
-  await page.reload();
   await expect(page.locator('.music-card')).toContainText('Welcome To The Jungle');
   await expect(page.getByRole('button', { name: 'Resume', exact: true })).toBeVisible();
   await page.getByRole('button', { name: /^Complete demo action/ }).click();
@@ -638,7 +583,7 @@ test('Spotify enables a focused one-song break and the completion feeds weekly r
   await expect(page.locator('.learning-section')).toContainText('Music has a place in your day');
 });
 
-test('Spotify demo connection and all three music-source labels persist without changing preferences', async ({ page }) => {
+test('Spotify demo connection and all three music-source labels apply without changing preferences', async ({ page }) => {
   await openDemo(page);
   const originalInterests = (await stored(page)).preferences.interests;
   await goTo(page, 'You');
@@ -650,8 +595,7 @@ test('Spotify demo connection and all three music-source labels persist without 
     await page.keyboard.press('Escape');
     await preview(page, 'Evening music recharge');
     await expect(page.locator('.music-source')).toHaveText(label);
-    await page.reload();
-    await expect(page.locator('.music-source')).toHaveText(label);
+      await expect(page.locator('.music-source')).toHaveText(label);
     await goTo(page, 'You');
     await page.getByRole('button', { name: /^Connections/ }).click();
   }
@@ -669,19 +613,3 @@ test('Spotify demo connection and all three music-source labels persist without 
 });
 
 
-test('a new visit starts on welcome without deleting saved choices or interrupting refresh recovery', async ({ page, context }) => {
-  await openDemo(page);
-  await page.getByRole('button', { name: 'Make it easier', exact: true }).click();
-  await page.getByRole('button', { name: 'I can do that', exact: true }).click();
-  await page.getByRole('button', { name: 'Pause', exact: true }).click();
-  await page.reload();
-  await expect(page.getByRole('button', { name: 'Resume', exact: true })).toBeVisible();
-  const saved = await page.evaluate(() => localStorage.getItem('mosaic-v2-demo'));
-  const newVisit = await context.newPage();
-  await newVisit.goto('/');
-  await expect(newVisit.getByRole('button', { name: 'Set up Nudge', exact: true })).toBeVisible();
-  expect(await newVisit.evaluate(() => localStorage.getItem('mosaic-v2-demo'))).toBe(saved);
-  await newVisit.getByRole('button', { name: 'Close introduction', exact: true }).click();
-  await expect(newVisit.getByRole('button', { name: 'Resume', exact: true })).toBeVisible();
-  await newVisit.close();
-});

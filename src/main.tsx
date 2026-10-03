@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './styles.css';
 import App from './App';
 import { assetUrl } from './assets';
+import { resetPrototypeEntry } from './prototypeEntry';
+
+resetPrototypeEntry();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
 

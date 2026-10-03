@@ -51,13 +51,11 @@ test('Today exposes calendar openings, personal choices and a responsive setting
   await page.getByRole('dialog').getByRole('button', { name: 'Outdoors', exact: true }).click();
   await expect(page.locator('.recommendation h2')).toContainText('outside');
   await expect(page.locator('.recharge-picks')).not.toContainText('Playing musical instruments');
-  await page.reload();
   await expect(page.locator('.setting-entry')).toContainText('Outdoors');
   await page.getByRole('button', { name: /Indoors or outdoors\?/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Indoors', exact: true }).click();
   await page.locator('.recharge-picks').getByRole('button', { name: /Playing musical instruments/ }).click();
   await expect(page.getByRole('heading', { name: '10 minutes with an instrument?', exact: true })).toBeVisible();
-  await page.reload();
   await expect(page.getByRole('heading', { name: '10 minutes with an instrument?', exact: true })).toBeVisible();
 });
 
@@ -76,7 +74,6 @@ test('watching preferences produce an episode or a full movie according to the c
   await page.getByRole('button', { name: 'Do something I enjoy', exact: true }).click();
   await page.getByRole('button', { name: '90 minutes', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Make room for a movie?', exact: true })).toBeVisible();
-  await page.reload();
   await expect(page.getByRole('heading', { name: 'Make room for a movie?', exact: true })).toBeVisible();
   await expect(page.locator('.opportunity')).toContainText('90 MINUTES YOU CHOSE');
 });
