@@ -2,6 +2,8 @@
 
 **Small actions for your body and mind, fitted around your actual day.**
 
+[Open Nudge](https://yuvraj-verma01.github.io/nudge/) · [Public source](https://github.com/yuvraj-verma01/nudge)
+
 Nudge interprets health signals, available time, personal preferences and saved choices into one realistic Move or Recharge action. The prototype demonstrates context → opportunity → action → feedback → learning → adaptation.
 
 This mobile-first React / TypeScript / Vite PWA supports local use and public GitHub Pages hosting. The user has authorised public hosting under their GitHub account. There is no backend or authentication; personal preferences and history remain in each visitor’s browser. The latest presentation refinements are preserved in [docs/PRESENTATION_BRIEF.md](docs/PRESENTATION_BRIEF.md). The full submission brief is preserved in [docs/PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md); the durable product direction is in [docs/VISION.md](docs/VISION.md).
