@@ -33,7 +33,7 @@ Browser tests require Playwright Chromium (`npx playwright install chromium`). A
 ## The two-minute demo
 
 1. Welcome → **Try sample day** opens directly on Today.
-2. Sleep, steps, sitting and meetings flow into **Nudge noticed**. **So right now** connects that context to one realistic action.
+2. Sleep, steps, sitting and meetings flow into **Nudge noticed**. The available opening connects that context to one realistic action.
 3. **Move for 2?** shows “Jay did this 2-minute reset. Maya moved too.” before Start. The cue supports taking your own break; it opens the same Circle activity shown elsewhere.
 4. **Make it easier → I can do that** offers one ninety-second fallback and a focused guide.
 5. **Complete demo action** records an explicitly simulated completion without waiting. **Done early** remains a separate manual completion, using actual elapsed time.
@@ -77,7 +77,7 @@ Build, 80 automated checks and 47 visual states passed. Earlier source checkpoin
 
 ## Three destinations
 
-- **Today:** compact context, integrated body/mind observations, a visible causal explanation and one primary action with contextual social support. Why this fits expands on demand. Completed actions remain visible below deliberate action choices and optional check-in.
+- **Today:** compact context, integrated body/mind observations, a clear link between context and action and one primary action with contextual social support. Why this fits expands on demand. Completed actions remain visible below deliberate action choices and optional check-in.
 - **Rhythm:** weekly moments and intentional time, Move / Recharge totals, the action mosaic, activity types and supported learning. It is not an agenda or a health dashboard. Sample history is explicitly labelled and never becomes evidence of personal learning.
 - **You:** movement and recharge preferences, a sample Circle, connections, settings and the product guide. Exact preference vocabulary follows the brief; hobbies and creative time are consolidated.
 

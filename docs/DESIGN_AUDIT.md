@@ -71,3 +71,7 @@ The user's final music selection replaces the original example with Guns N’ Ro
 ## Full-song and personalisation refinement
 
 Validated 80 automated checks across the regression suite and new personalisation scenarios. The 47-state visual audit found no contrast, target-size, overflow or runtime issues. New coverage checks complete-song boundaries, selected interests, instrument and screen activity availability, optional indoor/outdoor filtering and persistence, full-movie time declarations, and agreement between the richer sample calendar and its current openings. The previously published source is preserved locally in `versions/nudge-before-personalisation-2026-10-03.tar.gz`.
+
+## Copy cleanup
+
+Removed filler prefixes, vague action descriptions, repeated reassurance and duplicate context on action cards. Instructions now name the actual behaviour. Mood remains visible in Nudge noticed and the reasoning disclosure. Retained sample-data, permission and privacy labels. Build, all 80 regression scenarios (including the updated copy expectations) and the 47-screen accessibility/layout audit passed.

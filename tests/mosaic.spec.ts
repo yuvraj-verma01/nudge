@@ -17,7 +17,7 @@ test('sample entry immediately communicates body, mind, context and one action',
   await expect(page.getByText('Sample context', { exact: true })).toBeVisible();
   await expect(page.getByRole('navigation').getByRole('button')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Nudge noticed', exact: true })).toBeVisible();
-  await expect(page.locator('.recommendation-copy')).toContainText('So right now:');
+  await expect(page.locator('.recommendation-copy')).toHaveText('Roll your shoulders, stretch and march.');
   await expect.poll(async () => {
     const navigationTop = await page.getByRole('navigation').evaluate(element => element.getBoundingClientRect().top);
     return page.locator('.action-social, .recommendation .primary, .adapt-options').evaluateAll((elements, top) => elements.every(element => element.getBoundingClientRect().bottom <= top), navigationTop);
@@ -141,7 +141,7 @@ test('swapping visibly changes the activity and records a different response', a
   await page.getByRole('button', { name: 'Swap activity', exact: true }).click();
   await page.getByRole('button', { name: 'Stretch / mobility', exact: true }).click();
   await expect(page.getByRole('heading', { name: '5-minute outdoor walk?', exact: true })).toHaveCount(0);
-  await expect(page.locator('.recommendation-copy')).toContainText('So right now:');
+  await expect(page.locator('.recommendation-copy')).toHaveText('Roll your shoulders, reach and loosen your wrists.');
   const state = await stored(page);
   expect(state.responses.at(-1).outcome).toBe('swapped');
   expect(state.responses.at(-1).swapReason).toBe('Stretch / mobility');
@@ -157,7 +157,7 @@ test('busy is intentional and evening demonstrates creative mental recharge', as
   await preview(page, 'Evening recharge');
   await expect(page.getByRole('heading', { name: '10 minutes with an instrument?', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Start', exact: true }).click();
-  await expect(page.getByText(/Pick up an instrument and play/)).toBeVisible();
+  await expect(page.getByText('Play something you enjoy on your instrument.', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Done early', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'How was that?', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Helped', exact: true }).click();
@@ -537,13 +537,13 @@ test('an overwhelmed check-in immediately offers a realistic reset after a decli
   await page.getByRole('button', { name: /^How are you feeling/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Overwhelmed', exact: true }).click();
   await expect(page.locator('.recommendation')).toContainText('RECHARGE · MIND');
-  await expect(page.locator('.recommendation-copy')).toContainText('You’re feeling overwhelmed');
+  await expect(page.locator('.recommendation-copy')).toHaveText('Look away from your screen and take a few comfortable breaths.');
   await expect(page.locator('.noticed')).toContainText('You’re feeling overwhelmed');
   await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeInViewport();
   const before = await stored(page);
   expect(before.responses.at(-1).outcome).toBe('declined');
   await page.reload();
-  await expect(page.locator('.recommendation-copy')).toContainText('You’re feeling overwhelmed');
+  await expect(page.locator('.recommendation-copy')).toHaveText('Look away from your screen and take a few comfortable breaths.');
   await page.getByRole('button', { name: 'Start', exact: true }).click();
   await expect(page.locator('.active-session')).toBeVisible();
   await page.getByRole('button', { name: /^Complete demo action/ }).click();
@@ -593,11 +593,11 @@ test('choosing tired and overwhelmed leads to different types of small action an
   await page.getByRole('button', { name: /^How are you feeling/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Tired', exact: true }).click();
   await expect(page.locator('.recommendation')).toContainText('MOVE · BODY');
-  await expect(page.locator('.recommendation-copy')).toContainText('feeling tired');
+  await expect(page.locator('.noticed')).toContainText('feeling tired');
   await page.getByRole('button', { name: /^How are you feeling/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Stressed', exact: true }).click();
   await expect(page.locator('.recommendation')).toContainText('RECHARGE · MIND');
-  await expect(page.locator('.recommendation-copy')).toContainText('feeling stressed');
+  await expect(page.locator('.noticed')).toContainText('feeling stressed');
   await page.getByRole('button', { name: /^How are you feeling/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Clear check-in', exact: true }).click();
   expect((await stored(page)).mood).toBeNull();
@@ -610,7 +610,7 @@ test('Spotify enables a focused one-song break and the completion feeds weekly r
   await expect(page.getByText('12m · sample', { exact: true })).toBeVisible();
   await preview(page, 'Evening music recharge');
   await expect(page.locator('.opportunity')).toContainText('22 MINUTES OPEN');
-  await expect(page.getByRole('heading', { name: 'You finally have a little room.', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Take one song?', exact: true })).toBeVisible();
   await expect(page.locator('.music-card')).toContainText('Welcome To The Jungle');
   await expect(page.locator('.music-card')).toContainText('Guns N’ Roses');
   await expect(page.locator('.music-card')).toContainText('Spotify · Demo connection');

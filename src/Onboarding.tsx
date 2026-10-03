@@ -47,7 +47,7 @@ export function Onboarding({ onComplete, initialData, onExit }: { onComplete: (d
         <label className="field-label">Your first name <span className="optional">Optional</span><input autoComplete="given-name" maxLength={24} placeholder="What should we call you?" value={draft.name} onChange={event => setDraft({ ...draft, name: event.target.value })} /></label>
       </>}
       {draft.step === 2 && <>
-        <p className="eyebrow">YOUR KIND OF CARE</p><h1 ref={heading} tabIndex={-1}>What actually works for you?</h1><p className="setup-copy">Pick a few things you enjoy. Small actions should feel like you.</p>
+        <p className="eyebrow">YOUR KIND OF CARE</p><h1 ref={heading} tabIndex={-1}>What actually works for you?</h1><p className="setup-copy">Choose the activities you enjoy.</p>
         <fieldset className="choices-field"><legend>Movement you don’t mind</legend><div className="choice-grid">{movementInterests.map(item => <button key={item} aria-pressed={draft.movementPreferences.includes(item)} onClick={() => setDraft({ ...draft, movementPreferences: toggle(draft.movementPreferences, item) })}><Activity size={18} /><span>{item}</span>{draft.movementPreferences.includes(item) && <Check size={14} />}</button>)}</div></fieldset>
         <fieldset className="choices-field"><legend>What helps you recharge</legend><div className="choice-grid">{rechargeInterests.map(item => { const Icon = interestIcons[item]; return <button key={item} aria-pressed={draft.interests.includes(item)} onClick={() => setDraft({ ...draft, interests: toggle(draft.interests, item) })}><Icon size={18} /><span>{item}</span>{draft.interests.includes(item) && <Check size={14} />}</button>; })}</div></fieldset>
       </>}
