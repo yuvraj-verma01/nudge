@@ -73,3 +73,7 @@ Today makes selected Recharge activities visible when they fit the available ope
 ## Copy standard
 
 Use short, concrete instructions for each recommended action. Avoid filler introductions such as “So right now”, repeated reassurance, and product-mechanics explanations in ordinary action screens. Context, opportunity and “Why this fits” communicate the reasoning. Keep necessary sample-data, permission and privacy labels.
+
+## Presentation entry
+
+Each new tab or browser visit opens welcome/onboarding even for a previously configured profile. Completing setup or closing the introduction unlocks the current tab for that visit. Refreshing that tab restores the existing flow and active session. Preferences, personal busy times and history remain saved; no presentation-entry reset deletes them.

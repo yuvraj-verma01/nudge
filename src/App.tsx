@@ -35,6 +35,8 @@ const scenarios: { name: Scenario; copy: string }[] = [
   { name: 'Social prompt', copy: '5:20 PM · a little encouragement from your Circle' },
 ];
 function stored(key: string) { try { return localStorage.getItem(key); } catch { return null; } }
+function enteredThisVisit() { try { return sessionStorage.getItem('nudge-entered-session-v1') === 'true'; } catch { return false; } }
+function markVisitEntered() { try { sessionStorage.setItem('nudge-entered-session-v1', 'true'); } catch { /* This visit can continue in memory. */ } }
 function restoreActive(demoMode: boolean): Active | null {
   try { const saved = JSON.parse(stored('mosaic-active-v2') || 'null'); const known = actions.find(a => a.id === saved?.action?.id); const track = sampleTracks.find(track => track.id === saved?.music?.id); const action = known && track && known.id === 'music-song' ? { ...known, duration: track.durationSeconds / 60, steps: known.steps.map(step => ({ ...step, seconds: track.durationSeconds })) } : known; return action && saved.demoMode === demoMode && Number.isFinite(saved.deadline) && Number.isFinite(saved.remaining) && typeof saved.paused === 'boolean' ? { ...saved, action, music: track ? { ...track, sourceLabel: typeof saved.music.sourceLabel === 'string' ? saved.music.sourceLabel : 'Recently played' } : undefined, fromFallback: saved.fromFallback === true, remaining: Math.min(action.duration * 60, Math.max(0, saved.paused ? saved.remaining : Math.ceil((saved.deadline - Date.now()) / 1000))) } : null; } catch { return null; }
 }
@@ -48,7 +50,7 @@ export default function App() {
     const now = new Date();
     return { ...saved, context: { ...saved.context, hour: now.getHours(), minute: now.getMinutes() } };
   });
-  const [onboarded, setOnboarded] = useState(() => (stored('mosaic-onboarded-v3') === 'true' || stored('mosaic-onboarded-v2') === 'true') && new URLSearchParams(location.search).get('intro') !== '1');
+  const [onboarded, setOnboarded] = useState(() => enteredThisVisit() && (stored('mosaic-onboarded-v3') === 'true' || stored('mosaic-onboarded-v2') === 'true') && new URLSearchParams(location.search).get('intro') !== '1');
   const [initialView] = useState(() => readView(state));
   const [page, setPage] = useState<Page>(initialView.page);
   const [sheet, setSheet] = useState<SheetName>(null);
@@ -164,9 +166,10 @@ export default function App() {
   function decline() { if (suggestion) log(suggestion, 'declined'); setOffer(null); setSheet(null); }
   function demo(scenario?: Scenario) { const sample = state.demoMode ? state : readModeState(true); setState(scenario ? scenarioState(sample, scenario) : initialState()); setOffer(null); setActive(null); setCompletionId(null); setNotice(''); if (!scenario) setEncouraged([]); navigate('Today'); }
   function returnToPersonal() { const personal = readModeState(false); const now = new Date(); setState({ ...personal, context: { ...personal.context, hour: now.getHours(), minute: now.getMinutes() } }); setOffer(null); setActive(null); setCompletionId(null); setNotice(''); navigate('Today'); }
-  function closeIntroduction() { try { localStorage.removeItem('mosaic-setup-v3'); } catch { /* Keep the saved profile. */ } setOnboarded(true); const url = new URL(location.href); url.searchParams.delete('intro'); history.replaceState(null, '', url.pathname + url.search + url.hash); }
+  function closeIntroduction() { markVisitEntered(); try { localStorage.removeItem('mosaic-setup-v3'); } catch { /* Keep the saved profile. */ } setOnboarded(true); const url = new URL(location.href); url.searchParams.delete('intro'); history.replaceState(null, '', url.pathname + url.search + url.hash); }
   function replayIntroduction() { try { localStorage.removeItem('mosaic-setup-v3'); } catch { /* Setup still works in memory. */ } setSheet(null); setOnboarded(false); }
   function finishSetup(data: OnboardingData) {
+    markVisitEntered();
     if (data.mode === 'sample') setState(initialState());
     else {
       const prior = readModeState(false);

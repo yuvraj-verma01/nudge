@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Open the local address printed by Vite. To revisit welcome, append `?intro=1`.
+Open the local address printed by Vite. Each new tab or visit starts on welcome so the presentation begins with onboarding. Refreshing the same tab preserves the current flow, including paused sessions. Saved preferences and history remain intact. To revisit welcome in the current tab, append `?intro=1`.
 
 ```sh
 npm run build
@@ -73,7 +73,7 @@ The calendar/check-in checkpoint passed 68 automated checks and 38 rendered-stat
 
 ## Presentation validation
 
-Build, 80 automated checks and 47 visual states passed. Earlier source checkpoints are preserved locally by the owner. The detailed findings are in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md).
+Build, 80 automated checks and 47 visual states passed in the copy-cleanup audit. The presentation-entry update additionally passed six focused onboarding, persistence and recovery scenarios. Earlier source checkpoints are preserved locally by the owner. The detailed findings are in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md).
 
 ## Three destinations
 

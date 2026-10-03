@@ -342,6 +342,7 @@ test('200% text remains readable without horizontal page overflow', async ({ pag
 test('saved personal busy times still suppress automatic recommendations after the redesign', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('mosaic-onboarded-v3', 'true');
+    sessionStorage.setItem('nudge-entered-session-v1', 'true');
     localStorage.setItem('mosaic-mode', 'personal');
     const now = new Date();
     const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -665,4 +666,22 @@ test('Spotify demo connection and all three music-source labels persist without 
   await page.keyboard.press('Escape');
   await preview(page, 'Evening music recharge');
   await expect(page.getByRole('button', { name: 'Take one song', exact: true })).toBeVisible();
+});
+
+
+test('a new visit starts on welcome without deleting saved choices or interrupting refresh recovery', async ({ page, context }) => {
+  await openDemo(page);
+  await page.getByRole('button', { name: 'Make it easier', exact: true }).click();
+  await page.getByRole('button', { name: 'I can do that', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause', exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Resume', exact: true })).toBeVisible();
+  const saved = await page.evaluate(() => localStorage.getItem('mosaic-v2-demo'));
+  const newVisit = await context.newPage();
+  await newVisit.goto('/');
+  await expect(newVisit.getByRole('button', { name: 'Set up Nudge', exact: true })).toBeVisible();
+  expect(await newVisit.evaluate(() => localStorage.getItem('mosaic-v2-demo'))).toBe(saved);
+  await newVisit.getByRole('button', { name: 'Close introduction', exact: true }).click();
+  await expect(newVisit.getByRole('button', { name: 'Resume', exact: true })).toBeVisible();
+  await newVisit.close();
 });
